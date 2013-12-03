@@ -52,6 +52,7 @@ Now type:
 unix> gdb bufbomb
 (gdb) break fizz
 (gdb) run -u quinnliu < raw
+(gdb) disas
 ```
 
 Which gives you:
@@ -113,3 +114,15 @@ gs             0x63     99
 Now we take the address at %ebp and add 0x8 to get the address of where it will grab the value to compare to the cookie "quinnliu"
 
 addressAt%ebp = 0x55683354
+
+addressAt%ebp+8 = 0x55683354 + 8 using the hex calculator from level 0
+                = 0x5568335C
+
+Now type:
+```(gdb) x/ 0x5568335C```
+
+Gives you:
+```
+(gdb) x/ 0x5568335C
+0x5568335c <_reserved+1037148>: 0x004ae610
+```
