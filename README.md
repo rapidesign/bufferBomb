@@ -4,3 +4,5 @@ Buffer Bomb
 
 [Level 0](./level0.md)
 
+[Level 1](./level1.md)
+

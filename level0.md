@@ -2,14 +2,14 @@ Goal = provide a string longer than getbuf can handle causing an overflow and pu
 
 Main Steps:
 
-1. locate the address of the function ```Smoke()```
+1. locate the address of the function ```smoke()```
 
-   To find the address of function ```Smoke()``` type:
+   To find the address of function ```smoke()``` type:
    ```unix> objdump -d bufbomb | less```
+ 
+   My address for ```smoke()``` = 080490aa <smoke>:
 
-   My address for ```Smoke()``` = 080490aa <smoke>:
-
-   <b>WRITE DOWN the address for ```Smoke()``` as you will be using it later</b>
+   <b>write down the address for ```smoke()``` as you will be using it later</b>
 
 
 2. calculate the length of the string size to cause an overflow
@@ -59,7 +59,7 @@ Main Steps:
 
    Remember that the goal is to push a string that goes one address beyond the location of %ebp. 
 
-   <b>WRITE DOWN %ebp address as you will be using it later. In my case:</b>
+   <b>write down %ebp address as you will be using it later. In my case:</b>
 
    %ebp = 0x55683350 
 
@@ -197,11 +197,11 @@ Main Steps:
 
    So DDDD = 0x44444444
 
-   After DDDD is 0x08048c00 <= THIS IS THE RETURN ADDRESS WE BE CHANGE the address of ```Smoke()```!!!!!
+   After DDDD is 0x08048c00 <= THIS IS THE RETURN ADDRESS WE BE CHANGE the address of ```smoke()```!!!!!
 
-4. force the function getbuf to return to fucntion ```Smoke()``` instead of returning the value 1.
+4. force the function getbuf to return to fucntion ```smoke()``` instead of returning the value 1.
 
-   Find where you wrote down the address of ```Smoke()``` earlier. Mine is = 080490aa
+   Find where you wrote down the address of ```smoke()``` earlier. Mine is = 080490aa
 
    Because my machine is little endian the least significant byte is first.
 
@@ -226,7 +226,7 @@ Main Steps:
 
    And you should get the following output:
    ```
-   Userid: quinnliu
+   Userid: quinnliu 
    Cookie: 0x2d8cc70c
    Type string:Smoke!: You called smoke()
    VALID
