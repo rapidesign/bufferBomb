@@ -10,7 +10,7 @@ Main Steps:
 
 1. locate the address of the function ```Smoke()```
 
-To find the address of function ```Smoke()``` type:
+   To find the address of function ```Smoke()``` type:
    ```unix> objdump -d bufbomb | less```
 
    My address for ```Smoke()``` = 080490aa <smoke>:
