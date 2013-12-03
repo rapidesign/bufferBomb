@@ -2,13 +2,13 @@ Buffer Bomb
 ===========
 5 phases where you exploit the getbuf() function in C and manipulate the outcome of the bufbomb executable file.
 
-<h1>Level 0</h1>
+<h2>Level 0</h2>
 
 Goal = provide a string longer than getbuf can handle causing an overflow and pushing the rest of the string onto the stack where you can then control where the function getbuf returns after exection.
 
 Main Steps:
 
-<h3>1. locate the address of the function ```Smoke()```</h3>
+1. locate the address of the function ```Smoke()```
 
    To find the address of function ```Smoke()``` type:
    ```unix> objdump -d bufbomb | less```
@@ -18,7 +18,7 @@ Main Steps:
    <b>WRITE DOWN the address for ```Smoke()``` as you will be using it later</b>
 
 
-<h3>2. calculate the length of the string size to cause an overflow</h3>
+2. calculate the length of the string size to cause an overflow
    ```
    unix> gdb bufbomb
    (gdb) break getbuf
@@ -165,7 +165,7 @@ Main Steps:
    Now quit out of gdb with ```q``` command and type:
 
 
-<h3>3. create the buffer overflow string </h3>
+3. create the buffer overflow string
 
    ```
    bash-4.1$ perl -e 'print "A"x32 ,"B"x4, "C"x4, "D"x4 '>hex2
@@ -205,7 +205,7 @@ Main Steps:
 
    After DDDD is 0x08048c00 <= THIS IS THE RETURN ADDRESS WE BE CHANGE the address of ```Smoke()```!!!!!
 
-<h3>4. force the function getbuf to return to fucntion ```Smoke()``` instead of returning the value 1.</h3>
+4. force the function getbuf to return to fucntion ```Smoke()``` instead of returning the value 1.
 
    Find where you wrote down the address of ```Smoke()``` earlier. Mine is = 080490aa
 
@@ -225,7 +225,7 @@ Main Steps:
    Type:
    ```./hex2raw < hex3 > raw```
 
-<h3>5. Almost there!!!!!!!!!!</h3>
+5. Almost there!!!!!!!!!!
 
    Now actually give your "raw" file as input to the Buffer Bomb:
    ```./bufbomb -u quinnliu < raw```
