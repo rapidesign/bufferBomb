@@ -6,3 +6,5 @@ Buffer Bomb
 
 [Level 1](./level1.md)
 
+[Level 2](./level2.md)
+
