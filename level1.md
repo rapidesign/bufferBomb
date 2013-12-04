@@ -234,10 +234,15 @@ es             0x2b     43
 fs             0x0      0
 gs             0x63     99
 ```
+
 Now type:
-```continue```
+
+```
+continue
+```
 
 and you should get the completion message:
+
 ```
 (gdb) continue
 Continuing.
@@ -247,12 +252,17 @@ NICE JOB!
 
 Program exited normally.
 ```
+
 This is because at <fizz+15> after the cmp instruction has executed, the jne will not jump and the %eip (instruction pointer) points to the instruction immediately after the jne instruction.
 
 Now actually give your "raw" file as input to the Buffer Bomb:
-```./bufbomb -u quinnliu < raw```
+
+```
+./bufbomb -u quinnliu < raw
+```
 
 And you should get the following output:
+
 ```
 Userid: quinnliu
 Cookie: 0x2d8cc70c
