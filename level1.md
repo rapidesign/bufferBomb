@@ -6,7 +6,7 @@ Goal = change the return address and but also give your "id" within the buffer o
 To find the address of function ```fizz()``` type:
 ```unix> objdump -d bufbomb | less```
 
-and use ```f``` to go forward and ```b``` to go backwards until you find fizz:
+and use ```f``` to go forward and ```b``` to go backwards until you find fizz():
 
 ```
 0804905f <fizz>:
@@ -28,7 +28,7 @@ and use ```f``` to go forward and ```b``` to go backwards until you find fizz:
  804909e:       c7 04 24 00 00 00 00    movl   $0x0,(%esp)
  80490a5:       e8 e6 f8 ff ff          call   8048990 <exit@plt>
 ```
-<b>write down the address of fizz. Mine is 0804905f</b>
+<b>write down the address of fizz(). Mine is 0804905f</b>
 
 1) at 8049065 the value at %esp+8 is being stored into %eax by the mov instruction.
 2) the value stored in %eax is compared to the value at address 0x804908e.
