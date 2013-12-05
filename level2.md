@@ -213,9 +213,11 @@ Then type ```cont```
 
 Gives you:
 ```
-(gdb) cont
-Continuing.
-Type string:Misfire: global_value = 0xcc78c2d
+Userid: quinnliu
+Cookie: 0x2d8cc70c
+Type string:Bang!: You set global_value to 0x2d8cc70c
+VALID
+NICE JOB!
 
 Program exited normally.
 ```
