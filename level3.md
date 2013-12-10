@@ -48,7 +48,6 @@ End of assembler dump.
 ```
 
 Second let's view the disassembly of getbuf() by typing:
-
 ```
 unix> gdb bufbomb
 (gdb) break getbuf
@@ -57,7 +56,6 @@ unix> gdb bufbomb
 ```
 
 Gives you:
-
 ```
 (gdb) disas
 Dump of assembler code for function getbuf:
@@ -166,7 +164,7 @@ Now let's examine our calculated offset:
 0x55683374 <_reserved+1037172>: 0x3365b045
 ```
 
-WOW! 0x3365b045 is exactly what was expected. When we start injecting machine code onto the stack we will corrupt the stack and the original %ebp will be overwritten with our exploit code. In previous levels, overwriting %ebp with our exploit code did not negatively affect the outcome since we redirected the program to just quit the bufbomb binary as opposed to attempting to return to a calling fucntion.
+WOW! 0x3365b045 is exactly what was expected since 0x3365b045 what is at %eax. When we start injecting machine code onto the stack we will corrupt the stack and the original %ebp will be overwritten with our exploit code. In previous levels, overwriting %ebp with our exploit code did not negatively affect the outcome since we redirected the program to just quit the bufbomb binary as opposed to attempting to return to a calling fucntion.
 
 However, in level 3 we inject exploit code onto the stack to force getbuf() to return our cookie, and then push the address of where getbuf() would normally return to we'd receive a message stating that the stack has been corrupted. The program bufbomb detects this by grabbing the dynamic value held in %eax at test+12 and storing at the offset -0xc(%ebp), it then executes getbuf() and then shortly after returning from getbuf() compares the value at offset -0xc(%ebp) to %edx on test+27. If the value held at -0xC(%ebp) matches with the value at %edx then it will set a Z flag to 1 via the cmp on test+30. On test+32 the JE jump is taken if the Z flag has been set(ZF = 1), thus positively or negatively affecting the output of the bufbomb program depending on the state of %ebp.
 
