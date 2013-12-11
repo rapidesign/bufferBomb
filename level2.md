@@ -1,5 +1,5 @@
-Level 2
-=======
+Level 2: Firecracker
+====================
 
 Goal = inject machine instructions onto the stack, have those instructions execute and then redirect function getbuf() to function bang()
 

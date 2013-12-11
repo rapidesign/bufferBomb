@@ -1,5 +1,5 @@
-Level 0
-=======
+Level 0: Candle
+===============
 
 Goal = provide a string longer than getbuf can handle causing an overflow and pushing the rest of the string onto the stack where you can then control where the function getbuf returns after exection.
 

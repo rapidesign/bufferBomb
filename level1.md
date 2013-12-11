@@ -1,5 +1,5 @@
-Level 1
-=======
+Level 1: Sparkler
+=================
 
 Goal = change the return address and but also give your "id" within the buffer overflow.
 
