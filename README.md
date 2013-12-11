@@ -10,3 +10,5 @@ Buffer Bomb
 
 [Level 3 Solution](./level3.md)
 
+[Level 4 Solution](./level4.md)
+
