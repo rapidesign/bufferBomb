@@ -170,6 +170,7 @@ Main Steps:
    bufbomb  exploit.txt  hex  hex2  hex2raw  makecookie
    bash-4.1$ less hex2
    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDD
+   ```
 
    Now use hex2 as your new input in gdb:
    ```
@@ -182,10 +183,7 @@ Main Steps:
    (gdb) x/20x $esp 
    ```
 
-   On the second call of 
-   ```
-   (gdb) x/20x $esp
-   ``` 
+   On the second call of ```(gdb) x/20x $esp``` 
    
    you will see:
    ```
