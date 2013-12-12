@@ -182,8 +182,12 @@ Main Steps:
    (gdb) x/20x $esp 
    ```
 
-   On the second call of ```(gdb) x/20x $esp``` you will see:
-
+   On the second call of 
+   ```
+   (gdb) x/20x $esp
+   ``` 
+   
+   you will see:
    ```
    (gdb) x/20x $esp
    0x55683318 <_reserved+1037080>: 0x55683328      0x00bafb36      0x00d0d32c       0x55683328
@@ -195,7 +199,9 @@ Main Steps:
    ```
 
    Understand that our input file is:
-   ```AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDD```
+   ```
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBCCCCDDDD
+   ```
    where A = 41, B = 42, C = 43, & D = 44
 
    So DDDD = 0x44444444
